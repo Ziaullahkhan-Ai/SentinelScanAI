@@ -1,0 +1,5 @@
+{
+  "name": "Sentinel AI: News Intelligence Radar",
+  "description": "An enterprise-grade media intelligence platform that scrapes RSS feeds, performs AI-driven sentiment analysis, categorization, and entity extraction using Gemini, and provides real-time dashboard visualizations and automated alerts.",
+  "requestFramePermissions": []
+}
