@@ -10,11 +10,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/65239a5180.js" crossorigin="anonymous"></script>
+  <script>
+    // Polyfill for process.env to prevent ReferenceErrors in browser
+    window.process = window.process || { env: {} };
+  </script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background-color: #0f172a; /* slate-900 */
       color: #f8fafc; /* slate-50 */
+      margin: 0;
+      padding: 0;
     }
     
     .custom-scrollbar::-webkit-scrollbar {
@@ -54,5 +60,7 @@
 </head>
 <body>
   <div id="root"></div>
+  <!-- Explicitly load the application module -->
+  <script type="module" src="index.tsx"></script>
 </body>
 </html>

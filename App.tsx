@@ -18,28 +18,49 @@ import ChatBot from './components/ChatBot';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('sentinel_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('sentinel_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error("Failed to parse user from storage", e);
+      return null;
+    }
   });
 
   const [articles, setArticles] = useState<Article[]>(() => {
-    const saved = localStorage.getItem('sentinel_articles');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('sentinel_articles');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
 
   const [feeds, setFeeds] = useState<RSSFeed[]>(() => {
-    const saved = localStorage.getItem('sentinel_feeds');
-    return saved ? JSON.parse(saved) : DEFAULT_FEEDS;
+    try {
+      const saved = localStorage.getItem('sentinel_feeds');
+      return saved ? JSON.parse(saved) : DEFAULT_FEEDS;
+    } catch (e) {
+      return DEFAULT_FEEDS;
+    }
   });
 
   const [triggers, setTriggers] = useState<AlertTrigger[]>(() => {
-    const saved = localStorage.getItem('sentinel_triggers');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('sentinel_triggers');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
 
   const [alertHistory, setAlertHistory] = useState<AlertHistory[]>(() => {
-    const saved = localStorage.getItem('sentinel_alert_history');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('sentinel_alert_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -100,7 +121,7 @@ const App: React.FC = () => {
     if (isProcessing) return;
     setIsProcessing(true);
     
-    const unprocessed = articles.filter(a => !a.processed).slice(0, 10);
+    const unprocessed = articles.filter(a => !a.processed).slice(0, 5);
     if (unprocessed.length === 0) {
       setStatusMsg('All items analyzed.');
       setIsProcessing(false);
@@ -127,7 +148,7 @@ const App: React.FC = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [articles, isProcessing, triggers]);
+  }, [articles, isProcessing]);
 
   const checkTriggers = useCallback((article: Article) => {
     if (!article.analysis) return;

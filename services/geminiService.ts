@@ -2,7 +2,16 @@
 import { GoogleGenAI, Type, Chat } from "@google/genai";
 import { AnalysisResult, Category } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safe retrieval of API Key
+const getApiKey = () => {
+  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+    return process.env.API_KEY;
+  }
+  return (window as any).API_KEY || '';
+};
+
+const apiKey = getApiKey();
+const ai = new GoogleGenAI({ apiKey });
 
 const ANALYSIS_SCHEMA = {
   type: Type.OBJECT,
@@ -38,6 +47,11 @@ const ANALYSIS_SCHEMA = {
 };
 
 export async function analyzeArticle(title: string, content: string): Promise<AnalysisResult> {
+  if (!apiKey) {
+    console.error("API Key missing. Cannot analyze article.");
+    return fallbackResult();
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -55,14 +69,18 @@ export async function analyzeArticle(title: string, content: string): Promise<An
     return result as AnalysisResult;
   } catch (error) {
     console.error("AI Analysis Error:", error);
-    return {
-      summary: "Analysis failed due to a system error.",
-      category: Category.GENERAL,
-      sentiment: 0,
-      confidence: 0,
-      entities: { people: [], organizations: [], locations: [] },
-    };
+    return fallbackResult();
   }
+}
+
+function fallbackResult(): AnalysisResult {
+  return {
+    summary: "Analysis unavailable. Please check system logs or API configuration.",
+    category: Category.GENERAL,
+    sentiment: 0,
+    confidence: 0,
+    entities: { people: [], organizations: [], locations: [] },
+  };
 }
 
 export function createSentinelChat(context: string): Chat {
